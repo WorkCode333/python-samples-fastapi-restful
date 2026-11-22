@@ -148,7 +148,9 @@ async def get_by_id_async(
     """
     player = await player_service.retrieve_by_id_async(async_session, player_id)
     if not player:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Player not found."
+        )
     return player
 
 
@@ -177,12 +179,12 @@ async def get_by_squad_number_async(
         HTTPException: HTTP 404 Not Found error if the Player with the specified
         Squad Number does not exist.
     """
-    player = await player_service.retrieve_by_squad_number_async(
+    found = await player_service.retrieve_by_squad_number_async(
         async_session, squad_number
     )
-    if not player:
+    if not found:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return player
+    return found
 
 
 # PUT --------------------------------------------------------------------------
@@ -263,6 +265,11 @@ async def delete_async(
         HTTPException: HTTP 404 Not Found error if the Player with the specified Squad
         Number does not exist.
     """
+    if squad_number <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Squad number must be positive.",
+        )
     player = await player_service.retrieve_by_squad_number_async(
         async_session, squad_number
     )
