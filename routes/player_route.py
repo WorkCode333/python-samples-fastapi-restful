@@ -76,7 +76,7 @@ async def post_async(
     if existing:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="A Player with this squad number already exists.",
+            detail="A Player with the same squad number already exists.",
         )
     player = await player_service.create_async(async_session, player_model)
     if player is None:  # pragma: no cover
@@ -112,13 +112,13 @@ async def get_all_async(
     Returns:
         List[PlayerResponseModel]: A list of Pydantic models representing all players.
     """
-    players = await simple_memory_cache.get(CACHE_KEY)
+    cached = await simple_memory_cache.get(CACHE_KEY)
     response.headers["X-Cache"] = "HIT"
-    if players is None:
-        players = await player_service.retrieve_all_async(async_session)
-        await simple_memory_cache.set(CACHE_KEY, players, ttl=CACHE_TTL)
+    if cached is None:
+        cached = await player_service.retrieve_all_async(async_session)
+        await simple_memory_cache.set(CACHE_KEY, cached, ttl=CACHE_TTL)
         response.headers["X-Cache"] = "MISS"
-    return players
+    return cached
 
 
 @api_router.get(
