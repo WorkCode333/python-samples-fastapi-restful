@@ -179,12 +179,12 @@ async def get_by_squad_number_async(
         HTTPException: HTTP 404 Not Found error if the Player with the specified
         Squad Number does not exist.
     """
-    found = await player_service.retrieve_by_squad_number_async(
+    player = await player_service.retrieve_by_squad_number_async(
         async_session, squad_number
     )
-    if not found:
+    if not player:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return found
+    return player
 
 
 # PUT --------------------------------------------------------------------------
@@ -224,7 +224,10 @@ async def put_async(
         validation (missing or invalid required fields).
     """
     if player_model.squad_number != squad_number:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Squad number in the body does not match the path.",
+        )
     player = await player_service.retrieve_by_squad_number_async(
         async_session, squad_number
     )
