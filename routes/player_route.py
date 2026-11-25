@@ -75,7 +75,7 @@ async def post_async(
     )
     if existing:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="A Player with the same squad number already exists.",
         )
     player = await player_service.create_async(async_session, player_model)
@@ -147,7 +147,7 @@ async def get_by_id_async(
         exist.
     """
     player = await player_service.retrieve_by_id_async(async_session, player_id)
-    if not player:
+    if player is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Player not found."
         )

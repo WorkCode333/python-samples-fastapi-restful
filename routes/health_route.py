@@ -11,7 +11,7 @@ api_router = APIRouter()
 
 
 @api_router.get("/health", tags=["Health"])
-async def health_check():
+async def check_health():
     """
     Simple health check endpoint.
     Returns a JSON response with a single key "status" and value "ok".
